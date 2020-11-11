@@ -67,7 +67,8 @@ def rref(matrix):
 
 
 def solve(vector, matrix, reduced=None, triangular=None, pivots=None):
-    '''Solves the linear system Mx=v
+    '''Solves the linear system Mx=v, returning one solution and a basis
+    for the kernel of M.
 
     >>> M = np.array([[1, 1, 1], \
                       [0, 1, 0], \
@@ -93,17 +94,18 @@ def solve(vector, matrix, reduced=None, triangular=None, pivots=None):
     solution = np.zeros(n, dtype=np.bool)
     for col in nonZeroColumns:
         solution[col] = True
-    # Solutions to homogeneous system
-    freeColumns = [i for i in range(n) if i not in pivots[1]]
-    kernel_basis = np.zeros((n, len(freeColumns)), dtype=np.bool)
-    for idx, i in enumerate(freeColumns):
-        freeColumn = reduced[:, i]
-        for row in filter(lambda row: freeColumn[row], range(m)):
-            col = pivots[1][pivots[0].index(row)]
-            kernel_basis[col, idx] = True
-        kernel_basis[i, idx] = True
 
-    return solution, kernel_basis
+    # Solutions to homogeneous system WRONG
+    # freeColumns = [i for i in range(n) if i not in pivots[1]]
+    # kernel_basis = np.zeros((n, len(freeColumns)), dtype=np.bool)
+    # for idx, i in enumerate(freeColumns):
+    #     freeColumn = reduced[:, i]
+    #     for row in filter(lambda row: freeColumn[row], range(m)):
+    #         col = pivots[1][pivots[0].index(row)]
+    #         kernel_basis[col, idx] = True
+    #     kernel_basis[i, idx] = True
+
+    return solution  # , kernel_basis
 
 
 if __name__ == "__main__":
