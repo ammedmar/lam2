@@ -69,17 +69,31 @@ def rref(matrix):
 def solve(vector, matrix, reduced=None, triangular=None, pivots=None):
     '''Solves the linear system Mx=v
 
+    >>> M = np.array([[1, 1, 1], \
+                      [0, 1, 0], \
+                      [0, 0, 0]])
+    >>> v = np.array([0, 0, 1])
+    >>> solve(v, M)
+    Traceback (most recent call last):
+    ValueError: equation has no solutions
+
     '''
     m, n = matrix.shape
     if reduced is None:
         reduced, triangular, pivots = rref(matrix)
+    # Apply row operations to input vector
     w = np.matmul(triangular.astype(np.int8), vector.astype(np.int8))
     w = (w % 2).astype(np.bool)
+    # Solvable?
+    nonZeroRows = [i for i, b in enumerate(w) if b]
+    if not all(i in pivots[0] for i in nonZeroRows):
+        raise ValueError('equation has no solutions')
+    # Find one solution
     nonZeroColumns = [col for row, col in zip(*pivots) if w[row]]
     solution = np.zeros(n, dtype=np.bool)
     for col in nonZeroColumns:
         solution[col] = True
-
+    # Solutions to homogeneous system
     freeColumns = [i for i in range(n) if i not in pivots[1]]
     kernel_basis = np.zeros((n, len(freeColumns)), dtype=np.bool)
     for idx, i in enumerate(freeColumns):
